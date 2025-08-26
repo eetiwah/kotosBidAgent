@@ -1,0 +1,24 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Linux executables (no extension, common patterns)
+# Ignore specific known executables
+agent
+
+# Ignore agent-specific tor directories for bidAgent and derivatives
+agent/tor/linux/kotosBidAgent*/
+agent/tor/win/kotosBidAgent*/
+
+# Ensure dependencies are tracked
+!agent/tor/linux/dependencies/
+!agent*/tor/linux/dependencies/
+
+# env file
+#.env
+*.pem
+*.db
+*.lock
