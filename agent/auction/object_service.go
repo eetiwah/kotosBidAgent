@@ -13,7 +13,7 @@ import (
 )
 
 func CreateAuctionObj(data []byte) error {
-	// Define the URL to the meta data manager
+	// Define the URL to the auction manager
 	url := fmt.Sprintf("%s/createAuction", utilities.AUCTION_MGR_URI)
 
 	// Create HTTP request
@@ -58,7 +58,7 @@ func CreateAuctionObj(data []byte) error {
 }
 
 func StartAuction(data []byte) error {
-	// Define the URL to the meta data manager
+	// Define the URL to the auction manager
 	url := fmt.Sprintf("%s/startAuction", utilities.AUCTION_MGR_URI)
 
 	// Create HTTP request
@@ -95,7 +95,7 @@ func StartAuction(data []byte) error {
 }
 
 func StopAuction(data []byte) error {
-	// Define the URL to the meta data manager
+	// Define the URL to the auction manager
 	url := fmt.Sprintf("%s/stopAuction", utilities.AUCTION_MGR_URI)
 
 	// Create HTTP request
@@ -131,28 +131,162 @@ func StopAuction(data []byte) error {
 	return nil
 }
 
-// Get a list of auctions that need to be responded to
-func GetAuctionList() ([]AuctionObject, error) {
-	var _list []AuctionObject
+func GetAuctionObj(id string) (AuctionObject, error) {
+	var obj AuctionObject
 
-	// Define the URL to the meta data manager
-	url := fmt.Sprintf("%s/getAuctionList", utilities.AUCTION_MGR_URI)
+	// Define the URL to the auction manager
+	url := fmt.Sprintf("%s/getAuction/%s", utilities.AUCTION_MGR_URI, id)
 
-	// Create HTTP request
-	req, err := http.NewRequest("GET", url, nil)
+	// Create HTTP request with byteData as body
+	req, err := http.NewRequest("Get", url, nil)
 	if err != nil {
-		errMsg := fmt.Sprintf("GetAuctionList: creating HTTP request %s: %v", url, err)
+		errMsg := fmt.Sprintf("Error: get_auction creating HTTP request %s: %v", url, err)
 		log.Println(errMsg)
-		//sendErrorMessage(conversationID, "Thread_Services: http error", errMsg)
-		return _list, err
+		return obj, errors.New(errMsg)
 	}
-	//req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	// Send request with timeout
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		errMsg := fmt.Sprintf("GetAuctionList: HTTP POST %s: %v", url, err)
+		errMsg := fmt.Sprintf("Error: get_auction HTTP Get %s: %v", url, err)
+		log.Println(errMsg)
+		return obj, errors.New(errMsg)
+	}
+	defer resp.Body.Close()
+
+	// Check HTTP status and read response body for errors
+	if resp.StatusCode != http.StatusOK {
+		body, readErr := io.ReadAll(resp.Body)
+		errMsg := fmt.Sprintf("Error: get_auction HTTP status code %d", resp.StatusCode)
+		if readErr == nil && len(body) > 0 {
+			errMsg += fmt.Sprintf(": %s", string(body))
+		}
+		log.Println(errMsg)
+		return obj, errors.New(errMsg)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&obj); err != nil {
+		errMsg := fmt.Sprintf("Error: get_auction decoding assignments JSON: %v", err)
+		log.Println(errMsg)
+		return obj, err
+	}
+
+	return obj, nil
+}
+
+func GetAuctionList() ([]AuctionObject, error) {
+	var _list []AuctionObject
+
+	// Define the URL to the auction manager
+	url := fmt.Sprintf("%s/getAuctionList", utilities.AUCTION_MGR_URI)
+
+	// Create HTTP request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: get_auction_list creating HTTP request %s: %v", url, err)
+		log.Println(errMsg)
+		return _list, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: get_auction_list HTTP POST %s: %v", url, err)
+		log.Println(errMsg)
+		return _list, err
+	}
+	defer resp.Body.Close()
+
+	// Check HTTP status and read response body for errors
+	if resp.StatusCode != http.StatusOK {
+		body, readErr := io.ReadAll(resp.Body)
+		errMsg := fmt.Sprintf("Error: get_auction_list HTTP status code %d", resp.StatusCode)
+
+		if readErr == nil && len(body) > 0 {
+			errMsg += fmt.Sprintf(": %s", string(body))
+		}
+		log.Println(errMsg)
+		return _list, err
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&_list); err != nil {
+		errMsg := fmt.Sprintf("Error: get_auction_list decoding assignments JSON: %v", err)
+		log.Println(errMsg)
+		return _list, err
+	}
+
+	return _list, nil
+}
+
+func GetBidObj(id string) (BidObject, error) {
+	var obj BidObject
+
+	// Define the URL to the auction manager
+	url := fmt.Sprintf("%s/getBid/%s", utilities.AUCTION_MGR_URI, id)
+
+	// Create HTTP request with byteData as body
+	req, err := http.NewRequest("Get", url, nil)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: get_bid creating HTTP request %s: %v", url, err)
+		log.Println(errMsg)
+		return obj, errors.New(errMsg)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: get_bid HTTP Get %s: %v", url, err)
+		log.Println(errMsg)
+		return obj, errors.New(errMsg)
+	}
+	defer resp.Body.Close()
+
+	// Check HTTP status and read response body for errors
+	if resp.StatusCode != http.StatusOK {
+		body, readErr := io.ReadAll(resp.Body)
+		errMsg := fmt.Sprintf("Error: get_bid HTTP status code %d", resp.StatusCode)
+		if readErr == nil && len(body) > 0 {
+			errMsg += fmt.Sprintf(": %s", string(body))
+		}
+		log.Println(errMsg)
+		return obj, errors.New(errMsg)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&obj); err != nil {
+		errMsg := fmt.Sprintf("Error: get_bid decoding assignments JSON: %v", err)
+		log.Println(errMsg)
+		return obj, err
+	}
+
+	return obj, nil
+}
+
+func GetBidList(id string) ([]BidObject, error) {
+	var _list []BidObject
+
+	// Define the URL to the auction manager
+	url := fmt.Sprintf("%s/getBidList/%s", utilities.AUCTION_MGR_URI, id)
+
+	// Create HTTP request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		errMsg := fmt.Sprintf("GetBidList: creating HTTP request %s: %v", url, err)
+		log.Println(errMsg)
+		return _list, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		errMsg := fmt.Sprintf("GetBidList: HTTP POST %s: %v", url, err)
 		log.Println(errMsg)
 		//sendErrorMessage(conversationID, "Thread_Services: http error", errMsg)
 		return _list, err
@@ -162,25 +296,25 @@ func GetAuctionList() ([]AuctionObject, error) {
 	// Check HTTP status and read response body for errors
 	if resp.StatusCode != http.StatusOK {
 		body, readErr := io.ReadAll(resp.Body)
-		errMsg := fmt.Sprintf("GetAuctionList: status code %d", resp.StatusCode)
+		errMsg := fmt.Sprintf("GetBidList: status code %d", resp.StatusCode)
 
 		if readErr == nil && len(body) > 0 {
 			errMsg += fmt.Sprintf(": %s", string(body))
 		}
 		log.Println(errMsg)
-		//sendErrorMessage(conversationID, "Thread_Services: http status", errMsg)
 		return _list, err
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&_list); err != nil {
-		errMsg := fmt.Sprintf("GetAuctionList: decoding assignments JSON: %v", err)
+		errMsg := fmt.Sprintf("GetStartAuctionList: decoding assignments JSON: %v", err)
 		log.Println(errMsg)
-		//sendErrorMessage(conversationID, "Thread_Services: http status", errMsg)
 		return _list, err
 	}
 
 	return _list, nil
 }
+
+// Not using the ones below
 
 func Responsed(id string) (bool, error) {
 
@@ -238,7 +372,7 @@ func Responsed(id string) (bool, error) {
 }
 
 func SetAuctionWinner(data []byte) error {
-	// Define the URL to the meta data manager
+	// Define the URL to the auction manager
 	url := fmt.Sprintf("%s/setAuctionWinner", utilities.AUCTION_MGR_URI)
 
 	// Create HTTP request
@@ -282,7 +416,7 @@ func AddBid(obj BidObject) error {
 		return errors.New(errMsg)
 	}
 
-	// Define the URL to the meta data manager
+	// Define the URL to the auction manager
 	url := fmt.Sprintf("%s/addBid", utilities.AUCTION_MGR_URI)
 
 	// Create HTTP request
@@ -319,7 +453,7 @@ func AddBid(obj BidObject) error {
 }
 
 func OurBidId(id string) error {
-	// Define the URL to the meta data manager
+	// Define the URL to the auction manager
 	url := fmt.Sprintf("%s/isOurBid/%s", utilities.AUCTION_MGR_URI, id)
 
 	// Create HTTP request

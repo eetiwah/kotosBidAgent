@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"kotosBidAgent/agent/admin"
+	"kotosBidAgent/agent/auction"
 	"kotosBidAgent/agent/utilities"
 	"strings"
 
@@ -49,7 +50,23 @@ func Messages(data string) string {
 		result := admin.GetContactStatus(cmd)
 		return string(utilities.Cwtchbot.PackMessage(model.OverlayChat, result))
 
-	// *** Auction Operations *** //
+		// *** Auction Operations *** //
+
+	case "get_auction":
+		result := auction.Get(cmd)
+		return string(utilities.Cwtchbot.PackMessage(model.OverlayChat, result))
+
+	case "get_auction_list":
+		result := auction.List(cmd)
+		return string(utilities.Cwtchbot.PackMessage(model.OverlayChat, result))
+
+	case "get_bid":
+		result := auction.GetBid(cmd)
+		return string(utilities.Cwtchbot.PackMessage(model.OverlayChat, result))
+
+	case "get_bid_list":
+		result := auction.BidList(cmd)
+		return string(utilities.Cwtchbot.PackMessage(model.OverlayChat, result))
 
 	default:
 		return string(utilities.Cwtchbot.PackMessage(model.OverlayChat, "Error: unrecognized command"))
