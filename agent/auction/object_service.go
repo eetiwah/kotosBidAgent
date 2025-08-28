@@ -65,7 +65,7 @@ func StartAuction(id string) error {
 	req, err := http.NewRequest("PUT", url, nil)
 	if err != nil {
 		errMsg := fmt.Sprintf("start_auction: creating HTTP request %s: %v", url, err)
-		log.Println(errMsg)
+		//log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 
@@ -74,7 +74,7 @@ func StartAuction(id string) error {
 	resp, err := client.Do(req)
 	if err != nil {
 		errMsg := fmt.Sprintf("start_auction: HTTP POST %s: %v", url, err)
-		log.Println(errMsg)
+		//log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 	defer resp.Body.Close()
@@ -87,7 +87,7 @@ func StartAuction(id string) error {
 		if readErr == nil && len(body) > 0 {
 			errMsg += fmt.Sprintf(": %s", string(body))
 		}
-		log.Println(errMsg)
+		//log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 
@@ -220,6 +220,50 @@ func GetAuctionList() ([]AuctionObject, error) {
 	}
 
 	return _list, nil
+}
+
+func AddBid(bidObj BidObject) error {
+	byteData, err := json.Marshal(bidObj)
+	if err != nil {
+		errMsg := fmt.Sprintf("AddBid: status code %d", err)
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+
+	// Define the URL to the auction manager
+	url := fmt.Sprintf("%s/addBid", utilities.AUCTION_MGR_URI)
+
+	// Create HTTP request
+	req, err := http.NewRequest("POST", url, bytes.NewReader(byteData))
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: add_bid creating HTTP request %s: %v", url, err)
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: add_bid HTTP POST %s: %v", url, err)
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+	defer resp.Body.Close()
+
+	// Check HTTP status and read response body for errors
+	if resp.StatusCode != http.StatusOK {
+		body, readErr := io.ReadAll(resp.Body)
+		errMsg := fmt.Sprintf("Error: add_bid status code %d", resp.StatusCode)
+
+		if readErr == nil && len(body) > 0 {
+			errMsg += fmt.Sprintf(": %s", string(body))
+		}
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+
+	return nil
 }
 
 func GetBidObj(id string) (BidObject, error) {
@@ -408,6 +452,7 @@ func SetAuctionWinner(data []byte) error {
 	return nil
 }
 
+/*
 func AddBid(obj BidObject) error {
 	byteData, err := json.Marshal(obj)
 	if err != nil {
@@ -451,6 +496,7 @@ func AddBid(obj BidObject) error {
 
 	return nil
 }
+*/
 
 func OurBidId(id string) error {
 	// Define the URL to the auction manager

@@ -17,23 +17,27 @@ type AuctionWinner struct {
 	BidID     string `json:"bidid"`     // GUID for the bid
 }
 
+/*
 type AuctionEnd struct {
 	AuctionID string    `json:"auctionid"` // GUID for the auction
 	EndDate   time.Time `json:"enddate"`   // end date
 }
+*/
 
 type BidObject struct {
-	BidId        string    `json:"bidid"`        // GUID for the bid
-	AuctionId    string    `json:"auctionid"`    // GUID for an auction
-	Price        string    `json:"price"`        // Target price
-	Quantity     int       `json:"quantity"`     // Quantity requested
-	DeliveryDate time.Time `json:"deliverydate"` // Delivery date
-	Onion        string    `json:"onion"`        // Onion address of the bid submitter
-	ResponseDate time.Time `json:"responsedate"` // The time the bid was submitted
+	BidId     string `json:"bidid"`     // GUID for the bid
+	AuctionId string `json:"auctionid"` // GUID for an auction
+	Price     string `json:"price"`     // Bid price
+	// Quantity     int       `json:"quantity"`     // Quantity requested
+	// DeliveryDate time.Time `json:"deliverydate"` // Delivery date
+	// Onion        string    `json:"onion"`        // Onion address of the bid submitter
+	// ResponseDate time.Time `json:"responsedate"` // The time the bid was submitted
 }
 
+/*
 type BidResponse struct {
 	AuctionID    string    `json:"auctionid"`    // GUID for the auction
 	BidId        string    `json:"bidid"`        // GUID for the bid
 	ResponseDate time.Time `json:"responsedate"` // end date
 }
+*/

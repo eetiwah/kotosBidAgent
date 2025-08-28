@@ -1,6 +1,9 @@
 package auction
 
 import (
+	"encoding/json"
+	"fmt"
+	"kotosBidAgent/agent/group"
 	"log"
 	"strings"
 )
@@ -45,7 +48,47 @@ func Messages(data string, conversationID int, onion string) {
 		// log.Println("start_auction received")
 		// log.Printf("data received = %s", cmdList[1])
 		//StartAuction(dataBytes)
-		StartAuction(cmdList[1])
+		err := StartAuction(cmdList[1])
+		if err != nil {
+			log.Printf("Error: %s", err.Error())
+			return
+		}
+
+		// Generate the bid
+		bid, err := GenerateBid(cmdList[1])
+		if err != nil {
+			log.Printf("Error: %s", err.Error())
+			return
+		}
+
+		log.Println("Bid was generated")
+
+		// Add bid to bid store
+		err = AddBid(bid)
+		if err != nil {
+			log.Printf("Error: %s", err.Error())
+			return
+		}
+
+		log.Println("Bid was stored")
+
+		byteData, err := json.Marshal(bid)
+		if err != nil {
+			errMsg := fmt.Sprintf("AddBid: status code %d", err)
+			log.Println(errMsg)
+		}
+
+		// Rebuild command
+		command := fmt.Sprintf("%s %s", "bid_offer", string(byteData))
+
+		// Send the command to the community
+		err = group.SendMessage([]byte(command))
+		if err != nil {
+			log.Printf("Error: %s", err.Error())
+			return
+		}
+
+		log.Println("Bid was sent")
 
 	case "stop_auction":
 		// log.Println("stop_auction received")

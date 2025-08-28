@@ -2,10 +2,9 @@ package auction
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"kotosBidAgent/agent/group"
-	"log"
+
+	"github.com/google/uuid"
 )
 
 // Auction management messages from admin
@@ -101,53 +100,26 @@ func BidList(commandList []string) string {
 	}
 }
 
-// Not using this one so far
-
-func Bid_Event_Sent(bidObj BidObject) error {
-	// Create a group message of the "bid_send" type
-	groupMsg := group.GroupMessage{
-		Type:    "bid_response",
-		Version: "1.0",
-		Data:    bidObj,
+func GenerateBid(auctionId string) (BidObject, error) {
+	bidObject := BidObject{
+		BidId:     uuid.NewString(),
+		AuctionId: auctionId,
+		Price:     "5.00",
 	}
-
-	// Serialize the message
-	dataBytes, err := json.Marshal(groupMsg)
-	if err != nil {
-		errMsg := fmt.Sprintf("Bid_Event_Sent: marshalling group message failed: %v", err)
-		log.Println(errMsg)
-		return errors.New(errMsg)
-	}
-
-	err = group.SendMessage(dataBytes)
-	if err != nil {
-		errMsg := fmt.Sprintf("Bid_Event_Sent: send message error: %v", err)
-		log.Println(errMsg)
-		return errors.New(errMsg)
-	}
-
-	log.Printf("Bid_Event_Sent: Bid %s was submitted for auction %s\n", bidObj.BidId, bidObj.AuctionId)
-	return nil
 
 	/*
-	   // Get the conversation
-	   conversation, err := utilities.Cwtchbot.Peer.FetchConversationInfo(utilities.AuctionCommunityOnion)
+		groupMsg := GroupMessage{
+			Type:    "bid_offer",
+			Version: "1.0",
+			Data:    bidObject,
+		}
 
-	   	if err != nil {
-	   		errMsg := fmt.Sprintf("Bid_Event_Sent: failed to find conversation for: %s, err: %v", utilities.AuctionCommunityOnion, err)
-	   		log.Println(errMsg)
-	   		//sendErrorMessage(conversation.ID, "Thread_Services: error", errMsg)
-	   		return errors.New(errMsg)
-	   	}
+		dataBytes, err := json.Marshal(groupMsg)
+		if err != nil {
+			return dataBytes, err
+		}
 
-	   // Send response to the group/community
-	   _, err = utilities.Cwtchbot.Peer.SendMessage(conversation.ID, string(utilities.Cwtchbot.PackMessage(model.OverlayChat, string(dataBytes))))
-
-	   	if err != nil {
-	   		log.Printf("Bid_Event_Sent: send message error: %v", err)
-	   	}
-
-	   log.Printf("Bid_Event_Sent: Bid %s was submitted for auction %s\n", bidObj.BidId, bidObj.AuctionId)
-	   return nil
 	*/
+
+	return bidObject, nil
 }
