@@ -36,30 +36,17 @@ func Get(commandList []string) string {
 	}
 }
 
-func List(commandList []string) string {
-	switch len(commandList) {
-	case 1:
-		return "Error: missing "
-
-	case 2:
-		if commandList[1] == "-help" {
-			return "usage: get_auction_list"
-		}
-
-		objList, err := GetAuctionList()
-		if err != nil {
-			return err.Error()
-		}
-
-		jsonStr, err := json.Marshal(objList)
-		if err != nil {
-			return fmt.Sprintf("Error: get_auction_list json marshal: %v", err)
-		}
-		return fmt.Sprintf("Auction List: %s", jsonStr)
-
-	default:
-		return "Error: parameter mismatch"
+func List() string {
+	objList, err := GetAuctionList()
+	if err != nil {
+		return err.Error()
 	}
+
+	jsonStr, err := json.Marshal(objList)
+	if err != nil {
+		return fmt.Sprintf("Error: get_auction_list json marshal: %v", err)
+	}
+	return fmt.Sprintf("Auction List: %s", jsonStr)
 }
 
 func GetBid(commandList []string) string {

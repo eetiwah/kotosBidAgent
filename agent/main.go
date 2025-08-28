@@ -201,17 +201,18 @@ func main() {
 
 				// Is this an auction message?
 				if conversationID == utilities.AuctionCommunityID {
-					log.Println("Auction message")
-				}
+					//log.Println("Auction message")
 
-				switch envelope.Overlay {
-				case TextMessageOverlay:
-					//log.Println("*** We are not processing the prior auction messages...")
-					auction.Messages(envelope.Data, envelope.ConversationID, envelope.Onion)
+					switch envelope.Overlay {
+					case TextMessageOverlay:
+						//log.Println("*** We are not processing the prior auction messages...")
+						auction.Messages(envelope.Data, envelope.ConversationID, envelope.Onion)
 
-				default:
-					log.Println("Error: unrecognized command")
-					//sendMessage(conversation.ID, packageReply("Error: unrecognized command"))
+					default:
+						log.Println("Error: unrecognized command")
+					}
+				} else {
+					log.Println("Error: unrecoginized community message")
 				}
 
 			case event.PeerStateChange:

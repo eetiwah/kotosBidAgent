@@ -37,19 +37,21 @@ func Messages(data string, conversationID int, onion string) {
 		log.Println("ping_auction received")
 
 	case "create_auction":
-		log.Println("create_auction received")
-		//CreateAuctionObj(dataBytes)
-		//CreateAuctionObj([]byte(cmdList[1]))
+		// log.Println("create_auction received")
+		// log.Printf("data received = %s", cmdList[1])
+		CreateAuctionObj([]byte(cmdList[1]))
 
 	case "start_auction":
-		log.Println("start_auction received")
+		// log.Println("start_auction received")
+		// log.Printf("data received = %s", cmdList[1])
 		//StartAuction(dataBytes)
-		//StartAuction([]byte(cmdList[1]))
+		StartAuction(cmdList[1])
 
 	case "stop_auction":
-		log.Println("stop_auction received")
+		// log.Println("stop_auction received")
+		// log.Printf("data received = %s", cmdList[1])
 		//StopAuction(dataBytes)
-		//StopAuction([]byte(cmdList[1]))
+		StopAuction(cmdList[1])
 
 	default:
 		//log.Printf("Auction MessageType error: %v from %d", groupMsg.Type, conversationID)
