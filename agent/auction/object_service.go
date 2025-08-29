@@ -273,7 +273,7 @@ func GetBidObj(id string) (BidObject, error) {
 	url := fmt.Sprintf("%s/getBid/%s", utilities.AUCTION_MGR_URI, id)
 
 	// Create HTTP request with byteData as body
-	req, err := http.NewRequest("Get", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		errMsg := fmt.Sprintf("Error: get_bid creating HTTP request %s: %v", url, err)
 		log.Println(errMsg)

@@ -12,7 +12,7 @@ import (
 func Get(commandList []string) string {
 	switch len(commandList) {
 	case 1:
-		return "Error: missing "
+		return "Error: could be missing auctionId"
 
 	case 2:
 		if commandList[1] == "-help" {
@@ -51,7 +51,7 @@ func List() string {
 func GetBid(commandList []string) string {
 	switch len(commandList) {
 	case 1:
-		return "Error: missing "
+		return "Error: could be missing bidId"
 
 	case 2:
 		if commandList[1] == "-help" {
@@ -77,7 +77,7 @@ func GetBid(commandList []string) string {
 func BidList(commandList []string) string {
 	switch len(commandList) {
 	case 1:
-		return "Error: missing "
+		return "Error: could be missing auctionId"
 
 	case 2:
 		if commandList[1] == "-help" {
@@ -106,20 +106,6 @@ func GenerateBid(auctionId string) (BidObject, error) {
 		AuctionId: auctionId,
 		Price:     "5.00",
 	}
-
-	/*
-		groupMsg := GroupMessage{
-			Type:    "bid_offer",
-			Version: "1.0",
-			Data:    bidObject,
-		}
-
-		dataBytes, err := json.Marshal(groupMsg)
-		if err != nil {
-			return dataBytes, err
-		}
-
-	*/
 
 	return bidObject, nil
 }
