@@ -40,12 +40,12 @@ func Messages(data string, conversationID int, onion string) {
 		log.Println("ping_auction received")
 
 	case "create_auction":
-		// log.Println("create_auction received")
+		log.Println("create_auction received")
 		// log.Printf("data received = %s", cmdList[1])
 		CreateAuctionObj([]byte(cmdList[1]))
 
 	case "start_auction":
-		// log.Println("start_auction received")
+		log.Println("start_auction received")
 		// log.Printf("data received = %s", cmdList[1])
 		//StartAuction(dataBytes)
 		err := StartAuction(cmdList[1])
@@ -91,10 +91,26 @@ func Messages(data string, conversationID int, onion string) {
 		log.Println("Bid was sent")
 
 	case "stop_auction":
-		// log.Println("stop_auction received")
+		log.Println("stop_auction received")
 		// log.Printf("data received = %s", cmdList[1])
 		//StopAuction(dataBytes)
-		StopAuction(cmdList[1])
+		err := StopAuction(cmdList[1])
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+
+		log.Println("Auction was stopped")
+
+	case "set_auction_winner":
+		log.Println("set_auction_winner received")
+		err := SetAuctionWinner(cmdList[1], cmdList[2])
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+
+		log.Printf("Auction %s winner was set %s", cmdList[1], cmdList[2])
 
 	default:
 		//log.Printf("Auction MessageType error: %v from %d", groupMsg.Type, conversationID)

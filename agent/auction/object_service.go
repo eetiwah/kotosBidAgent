@@ -131,6 +131,43 @@ func StopAuction(id string) error {
 	return nil
 }
 
+func SetAuctionWinner(auctionId string, bidId string) error {
+	// Define the URL to the auction manager
+	url := fmt.Sprintf("%s/setAuctionWinner/%s/%s", utilities.AUCTION_MGR_URI, auctionId, bidId)
+
+	// Create HTTP request
+	req, err := http.NewRequest("PUT", url, nil)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: set_auction_winner creating HTTP request %s: %v", url, err)
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		errMsg := fmt.Sprintf("Error: set_auction_winner HTTP POST %s: %v", url, err)
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+	defer resp.Body.Close()
+
+	// Check HTTP status and read response body for errors
+	if resp.StatusCode != http.StatusOK {
+		body, readErr := io.ReadAll(resp.Body)
+		errMsg := fmt.Sprintf("Error: set_auction_winner status code %d", resp.StatusCode)
+
+		if readErr == nil && len(body) > 0 {
+			errMsg += fmt.Sprintf(": %s", string(body))
+		}
+		log.Println(errMsg)
+		return errors.New(errMsg)
+	}
+
+	return nil
+}
+
 func GetAuctionObj(id string) (AuctionObject, error) {
 	var obj AuctionObject
 
@@ -413,43 +450,6 @@ func Responsed(id string) (bool, error) {
 	} else {
 		return false, nil
 	}
-}
-
-func SetAuctionWinner(data []byte) error {
-	// Define the URL to the auction manager
-	url := fmt.Sprintf("%s/setAuctionWinner", utilities.AUCTION_MGR_URI)
-
-	// Create HTTP request
-	req, err := http.NewRequest("PUT", url, bytes.NewReader(data))
-	if err != nil {
-		errMsg := fmt.Sprintf("SetAuctionWinner: creating HTTP request %s: %v", url, err)
-		log.Println(errMsg)
-		return errors.New(errMsg)
-	}
-
-	// Send request with timeout
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		errMsg := fmt.Sprintf("SetAuctionWinner: HTTP POST %s: %v", url, err)
-		log.Println(errMsg)
-		return errors.New(errMsg)
-	}
-	defer resp.Body.Close()
-
-	// Check HTTP status and read response body for errors
-	if resp.StatusCode != http.StatusOK {
-		body, readErr := io.ReadAll(resp.Body)
-		errMsg := fmt.Sprintf("SetAuctionWinner: status code %d", resp.StatusCode)
-
-		if readErr == nil && len(body) > 0 {
-			errMsg += fmt.Sprintf(": %s", string(body))
-		}
-		log.Println(errMsg)
-		return errors.New(errMsg)
-	}
-
-	return nil
 }
 
 /*
